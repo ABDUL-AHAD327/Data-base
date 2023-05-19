@@ -1,0 +1,250 @@
+CREATE VIEW EMPFR AS
+SELECT *
+FROM EMPLOYEE
+WHERE PARK_CODE = "FR1001"
+WITH CHECK OPTION;
+
+question 1
+MariaDB [ahad]> update empfr
+    -> set emp_phone='324-9652' where emp_num='100';
+Query OK, 1 row affected (0.011 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [ahad]> select * from empfr;
++---------+-----------+------------+-----------+------------+---------------+---------------+-----------+-----------+
+| EMP_NUM | EMP_TITLE | EMP_LNAME  | EMP_FNAME | EMP_DOB    | EMP_HIRE_DATE | EMP_AREA_CODE | EMP_PHONE | PARK_CODE |
++---------+-----------+------------+-----------+------------+---------------+---------------+-----------+-----------+
+|     100 | Ms        | Calderdale | Emma      | 1972-06-15 | 1992-03-15    | 0181          | 324-9652  | FR1001    |
+|     102 | Mr        | Arshad     | Arif      | 1969-11-14 | 1990-12-20    | 7253          | 675-8993  | FR1001    |
+|     105 | Ms        | Namowa     | Mirrelle  | 1990-03-14 | 2006-11-08    | 0181          | 890-3243  | FR1001    |
++---------+-----------+------------+-----------+------------+---------------+---------------+-----------+-----------+
+3 rows in set (0.001 sec)
+
+MariaDB [ahad]> drop view empfr;
+Query OK, 0 rows affected (0.001 sec)
+
+question 2
+	
+MariaDB [ahad]> create view emp_details
+    -> as
+    -> select emp_num,e1.park_code,park_name,emp_lname,emp_fname,emp_hire_date,emp_dob from employee e1,themepark t1
+    -> where e1.park_code=t1.park_code;
+Query OK, 0 rows affected (0.007 sec)
+
+MariaDB [ahad]> select * from emp_details;
++---------+-----------+--------------+------------+-----------+---------------+------------+
+| emp_num | park_code | park_name    | emp_lname  | emp_fname | emp_hire_date | emp_dob    |
++---------+-----------+--------------+------------+-----------+---------------+------------+
+|     100 | FR1001    | FairyLand    | Calderdale | Emma      | 1992-03-15    | 1972-06-15 |
+|     101 | UK3452    | PleasureLand | Ricardo    | Marshel   | 1996-04-25    | 1978-03-19 |
+|     102 | FR1001    | FairyLand    | Arshad     | Arif      | 1990-12-20    | 1969-11-14 |
+|     103 | UK3452    | PleasureLand | Roberts    | Anne      | 1994-08-16    | 1974-10-16 |
+|     104 | ZA1342    | GoldTown     | Denver     | Enrica    | 2001-10-20    | 1980-11-08 |
+|     105 | FR1001    | FairyLand    | Namowa     | Mirrelle  | 2006-11-08    | 1990-03-14 |
+|     106 | ZA1342    | GoldTown     | Smith      | Gemma     | 1989-01-05    | 1968-02-12 |
++---------+-----------+--------------+------------+-----------+---------------+------------+
+7 rows in set (0.006 sec)
+
+question 3
+
+MariaDB [ahad]> select emp_lname,emp_fname,park_name from emp_details;
++------------+-----------+--------------+
+| emp_lname  | emp_fname | park_name    |
++------------+-----------+--------------+
+| Calderdale | Emma      | FairyLand    |
+| Ricardo    | Marshel   | PleasureLand |
+| Arshad     | Arif      | FairyLand    |
+| Roberts    | Anne      | PleasureLand |
+| Denver     | Enrica    | GoldTown     |
+| Namowa     | Mirrelle  | FairyLand    |
+| Smith      | Gemma     | GoldTown     |
++------------+-----------+--------------+
+7 rows in set (0.001 sec)
+
+question 4
+MariaDB [ahad]> create view ticket_sales as
+    -> select park_name,min(line_price),max(line_price),avg(line_price) from themepark t1,sales s1,sales_line se1
+    -> where s1.park_code=t1.park_code and s1.transaction_no=se1.transaction_no
+    -> group by s1.park_code;
+Query OK, 0 rows affected (0.008 sec)
+
+MariaDB [ahad]> select * from ticket_sales;
++--------------+-----------------+-----------------+-----------------+
+| park_name    | min(line_price) | max(line_price) | avg(line_price) |
++--------------+-----------------+-----------------+-----------------+
+| FairyLand    |           14.99 |          139.96 |       50.232500 |
+| PleasureLand |           21.98 |          168.40 |       60.785714 |
+| GoldTown     |           12.12 |          114.68 |       47.637778 |
++--------------+-----------------+-----------------+-----------------+
+3 rows in set (0.005 sec)
+
+question 5
+
+MariaDB [ahad]> select distinct(date_format(sale_date,'%a-%d-%c-%y')) from sales;
++----------------------------------------+
+| (date_format(sale_date,'%a-%d-%c-%y')) |
++----------------------------------------+
+| Fri-18-5-07                            |
++----------------------------------------+
+1 row in set (0.001 sec)
+
+question 6
+
+MariaDB [ahad]> select emp_fname,emp_lname,upper(concat(date_format(emp_dob,'%m'),'01',substr(emp_lname,1,6))) as USER_ID from employee;
++-----------+------------+------------+
+| emp_fname | emp_lname  | USER_ID    |
++-----------+------------+------------+
+| Emma      | Calderdale | 0601CALDER |
+| Marshel   | Ricardo    | 0301RICARD |
+| Arif      | Arshad     | 1101ARSHAD |
+| Anne      | Roberts    | 1001ROBERT |
+| Enrica    | Denver     | 1101DENVER |
+| Mirrelle  | Namowa     | 0301NAMOWA |
+| Gemma     | Smith      | 0201SMITH  |
++-----------+------------+------------+
+7 rows in set (0.001 sec)
+
+question 7
+MariaDB [ahad]> select emp_fname,emp_lname,emp_dob
+    -> from employee
+    -> where dayofmonth(emp_dob)=14;
++-----------+-----------+------------+
+| emp_fname | emp_lname | emp_dob    |
++-----------+-----------+------------+
+| Arif      | Arshad    | 1969-11-14 |
+| Mirrelle  | Namowa    | 1990-03-14 |
++-----------+-----------+------------+
+2 rows in set (0.003 sec)
+
+question 8
+
+MariaDB [ahad]> select emp_fname as name,emp_phone,
+    -> lower(concat(substr(emp_phone,1,3),substr(emp_fname,1,2))) as user_password
+    -> from employee;
++----------+-----------+---------------+
+| name     | emp_phone | user_password |
++----------+-----------+---------------+
+| Emma     | 324-9652  | 324em         |
+| Marshel  | 324-4472  | 324ma         |
+| Arif     | 675-8993  | 675ar         |
+| Anne     | 898-3456  | 898an         |
+| Enrica   | 504-4434  | 504en         |
+| Mirrelle | 890-3243  | 890mi         |
+| Gemma    | 324-7845  | 324ge         |
++----------+-----------+---------------+
+7 rows in set (0.002 sec)
+
+question 9
+
+
+
+question 10
+MariaDB [ahad]> create view att as
+    -> select attract_capacity from attraction a1
+    -> where a1.attract_capacity>(select avg(attract_capacity) from attraction);
+Query OK, 0 rows affected (0.008 sec)
+
+MariaDB [ahad]> select * from att;
++------------------+
+| attract_capacity |
++------------------+
+|              120 |
+|              200 |
+|               80 |
+|               80 |
++------------------+
+4 rows in set (0.002 sec)
+
+question 11
+
+MariaDB [ahad]> create view tic as
+    -> select ticket_no,park_code from ticket
+    -> where ticket_price>(select max(ticket_price) from ticket where ticket_type='Child');
+Query OK, 0 rows affected (0.007 sec)
+
+MariaDB [ahad]> select * from tic;
++-----------+-----------+
+| ticket_no | park_code |
++-----------+-----------+
+|     11001 | SP4533    |
+|     13002 | FR1001    |
+|     67833 | ZA1342    |
+|     88568 | UK3452    |
++-----------+-----------+
+4 rows in set (0.002 sec)
+
+question 12
+
+MariaDB [ahad]> create view att2 as
+    -> select attract_no,min(hour_rate),max(hour_rate) from hours group by attract_no;
+Query OK, 0 rows affected (0.005 sec)
+
+MariaDB [ahad]> select * from att2;
++------------+----------------+----------------+
+| attract_no | min(hour_rate) | max(hour_rate) |
++------------+----------------+----------------+
+|      10034 |           6.50 |           6.50 |
+|      10078 |           8.50 |           8.50 |
+|      10098 |           8.50 |           8.50 |
+|      30011 |           7.20 |           7.20 |
+|      30012 |           5.99 |           7.20 |
+|      30044 |           5.99 |           5.99 |
++------------+----------------+----------------+
+6 rows in set (0.004 sec)
+
+question 13
+MariaDB [ahad]> create view tab as
+    -> select emp_fname,emp_lname,attract_no,date_worked from employee e1,hours h1 where e1.emp_num=h1.emp_num;
+Query OK, 0 rows affected (0.005 sec)
+
+MariaDB [ahad]> select * from tab;
++-----------+------------+------------+-------------+
+| emp_fname | emp_lname  | attract_no | date_worked |
++-----------+------------+------------+-------------+
+| Emma      | Calderdale |      10034 | 2007-05-18  |
+| Emma      | Calderdale |      10034 | 2007-05-20  |
+| Marshel   | Ricardo    |      10034 | 2007-05-18  |
+| Arif      | Arshad     |      30012 | 2007-05-23  |
+| Arif      | Arshad     |      30044 | 2007-05-21  |
+| Arif      | Arshad     |      30044 | 2007-05-22  |
+| Enrica    | Denver     |      30011 | 2007-05-21  |
+| Enrica    | Denver     |      30012 | 2007-05-22  |
+| Mirrelle  | Namowa     |      10078 | 2007-05-18  |
+| Mirrelle  | Namowa     |      10098 | 2007-05-18  |
+| Mirrelle  | Namowa     |      10098 | 2007-05-19  |
++-----------+------------+------------+-------------+
+11 rows in set (0.003 sec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	

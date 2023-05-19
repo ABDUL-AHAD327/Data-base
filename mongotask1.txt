@@ -1,0 +1,21 @@
+question no.4-2
+
+db.cities.find({$or: [{timezone:"Africa/Harare"}]})
+
+question no.4-2
+
+db.cities.find({population: {$gt:12985000}})
+
+question no.4-3
+db.cities.find({ "location.longitude": -58.37723 }, { _id: 0, location: 1, population: 1 })
+
+question 5
+db.cities.updateMany({ "country": "PK", "location.latitude": 73.2122 }, { $set: { "population": 55000 } })
+
+question 6
+
+db.cities.deleteMany({ "country": "PK", "timezone": "Asia/Karachi" })
+
+question 7
+
+db.moviepeople.find({ "birthname": "Freeman, Crispin McDougal" })

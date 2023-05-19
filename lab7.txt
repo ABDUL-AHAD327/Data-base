@@ -1,0 +1,102 @@
+MariaDB [organization]> select * from emp where salary>=(select max(salary) from emp);
++-------+-------+-----------+------+------------+--------+------------+--------+
+| empno | ename | job       | mgr  | hiredate   | salary | commission | deptno |
++-------+-------+-----------+------+------------+--------+------------+--------+
+|  7839 | King  | President | NULL | 2021-07-31 |   6500 |       NULL |     10 |
++-------+-------+-----------+------+------------+--------+------------+--------+
+1 row in set (0.003 sec)
+
+MariaDB [organization]> select * from emp where deptno=(select deptno from dept where dname="sales");
++-------+--------+----------+------+------------+--------+------------+--------+
+| empno | ename  | job      | mgr  | hiredate   | salary | commission | deptno |
++-------+--------+----------+------+------------+--------+------------+--------+
+|  7499 | Allen  | Salesman | 7566 | 2021-07-31 |   2000 |        500 |     30 |
+|  7521 | Ward   | Salesman | 7698 | 2021-07-31 |   1650 |        800 |     30 |
+|  7654 | Martin | Salesman | 7698 | 2021-07-31 |   1650 |       1400 |     30 |
+|  7698 | Blake  | Manager  | 7839 | 2021-07-31 |   3250 |       NULL |     30 |
+|  7844 | Turner | Salesman | 7698 | 2021-07-31 |   1900 |          0 |     30 |
+|  7900 | James  | Clerk    | 7698 | 2021-07-31 |   1350 |       NULL |     30 |
++-------+--------+----------+------+------------+--------+------------+--------+
+6 rows in set (0.001 sec)
+
+MariaDB [organization]> select * from emp where deptno=(select deptno from dept where location="NEW YORK");
++-------+--------+-----------+------+------------+--------+------------+--------+
+| empno | ename  | job       | mgr  | hiredate   | salary | commission | deptno |
++-------+--------+-----------+------+------------+--------+------------+--------+
+|  7782 | Clark  | Manager   | 7839 | 2021-07-31 |   2850 |       NULL |     10 |
+|  7839 | King   | President | NULL | 2021-07-31 |   6500 |       NULL |     10 |
+|  7934 | Miller | Clerk     | 7782 | 2021-07-31 |   1700 |       NULL |     10 |
++-------+--------+-----------+------+------------+--------+------------+--------+
+3 rows in set (0.002 sec)
+
+MariaDB [organization]> select count(ename) from emp where deptno=(select dept.deptno from dept where dname='sales');
++--------------+
+| count(ename) |
++--------------+
+|            6 |
++--------------+
+1 row in set (0.001 sec)
+
+MariaDB [organization]> select * from emp where salary> ALL(select salary from emp where deptno = 30);
++-------+-------+-----------+------+------------+--------+------------+--------+
+| empno | ename | job       | mgr  | hiredate   | salary | commission | deptno |
++-------+-------+-----------+------+------------+--------+------------+--------+
+|  7566 | Jones | Manager   | 7839 | 2021-07-31 |   3375 |       NULL |     20 |
+|  7788 | Scott | Analyst   | 7566 | 2021-07-31 |   3500 |       NULL |     20 |
+|  7839 | King  | President | NULL | 2021-07-31 |   6500 |       NULL |     10 |
+|  7902 | Ford  | Analyst   | 7566 | 2021-07-31 |   3500 |       NULL |     20 |
++-------+-------+-----------+------+------------+--------+------------+--------+
+4 rows in set (0.002 sec)
+
+MariaDB [organization]> select * from emp where salary> (select max( salary) from emp where deptno = 30);
++-------+-------+-----------+------+------------+--------+------------+--------+
+| empno | ename | job       | mgr  | hiredate   | salary | commission | deptno |
++-------+-------+-----------+------+------------+--------+------------+--------+
+|  7566 | Jones | Manager   | 7839 | 2021-07-31 |   3375 |       NULL |     20 |
+|  7788 | Scott | Analyst   | 7566 | 2021-07-31 |   3500 |       NULL |     20 |
+|  7839 | King  | President | NULL | 2021-07-31 |   6500 |       NULL |     10 |
+|  7902 | Ford  | Analyst   | 7566 | 2021-07-31 |   3500 |       NULL |     20 |
++-------+-------+-----------+------+------------+--------+------------+--------+
+4 rows in set (0.001 sec)
+
+MariaDB [organization]> select * from emp where salary> (select min( salary) from emp where deptno = 30);
++-------+--------+-----------+------+------------+--------+------------+--------+
+| empno | ename  | job       | mgr  | hiredate   | salary | commission | deptno |
++-------+--------+-----------+------+------------+--------+------------+--------+
+|  7499 | Allen  | Salesman  | 7566 | 2021-07-31 |   2000 |        500 |     30 |
+|  7521 | Ward   | Salesman  | 7698 | 2021-07-31 |   1650 |        800 |     30 |
+|  7566 | Jones  | Manager   | 7839 | 2021-07-31 |   3375 |       NULL |     20 |
+|  7654 | Martin | Salesman  | 7698 | 2021-07-31 |   1650 |       1400 |     30 |
+|  7698 | Blake  | Manager   | 7839 | 2021-07-31 |   3250 |       NULL |     30 |
+|  7782 | Clark  | Manager   | 7839 | 2021-07-31 |   2850 |       NULL |     10 |
+|  7788 | Scott  | Analyst   | 7566 | 2021-07-31 |   3500 |       NULL |     20 |
+|  7813 | David  | Clerk     | 7788 | 2021-07-31 |   1500 |       NULL |     20 |
+|  7839 | King   | President | NULL | 2021-07-31 |   6500 |       NULL |     10 |
+|  7844 | Turner | Salesman  | 7698 | 2021-07-31 |   1900 |          0 |     30 |
+|  7876 | Adams  | Clerk     | 7788 | 2021-07-31 |   1500 |       NULL |     20 |
+|  7902 | Ford   | Analyst   | 7566 | 2021-07-31 |   3500 |       NULL |     20 |
+|  7934 | Miller | Clerk     | 7782 | 2021-07-31 |   1700 |       NULL |     10 |
++-------+--------+-----------+------+------------+--------+------------+--------+
+13 rows in set (0.002 sec)
+
+MariaDB [organization]> select dname,deptno from dept where deptno!=all(select deptno from emp);
++------------+--------+
+| dname      | deptno |
++------------+--------+
+| Operations |     40 |
++------------+--------+
+1 row in set (0.004 sec)
+
+
+MariaDB [organization]> select * from emp e1 where salary > (select avg(salary) from emp e2 where e1.deptno=e2.deptno);
++-------+-------+-----------+------+------------+--------+------------+--------+
+| empno | ename | job       | mgr  | hiredate   | salary | commission | deptno |
++-------+-------+-----------+------+------------+--------+------------+--------+
+|  7499 | Allen | Salesman  | 7566 | 2021-07-31 |   2000 |        500 |     30 |
+|  7566 | Jones | Manager   | 7839 | 2021-07-31 |   3375 |       NULL |     20 |
+|  7698 | Blake | Manager   | 7839 | 2021-07-31 |   3250 |       NULL |     30 |
+|  7788 | Scott | Analyst   | 7566 | 2021-07-31 |   3500 |       NULL |     20 |
+|  7839 | King  | President | NULL | 2021-07-31 |   6500 |       NULL |     10 |
+|  7902 | Ford  | Analyst   | 7566 | 2021-07-31 |   3500 |       NULL |     20 |
++-------+-------+-----------+------+------------+--------+------------+--------+
+6 rows in set (0.001 sec)

@@ -1,0 +1,242 @@
+SIR WE HAVEN'T LEARNED HOW TO CREATE A .SQL FILE THATS WHY
+I'M SUBMITTING TEXT FILE 
+
+MariaDB [(none)]> use assignment;
+Database changed
+MariaDB [assignment]> show tables;
++----------------------+
+| Tables_in_assignment |
++----------------------+
+| department           |
+| employee             |
++----------------------+
+2 rows in set (0.002 sec)
+
+MariaDB [assignment]> select * from employee;
+Empty set (0.085 sec)
+
+MariaDB [assignment]> describe employee;
++------------+---------------+------+-----+---------+-------+
+| Field      | Type          | Null | Key | Default | Extra |
++------------+---------------+------+-----+---------+-------+
+| emp_no     | int(11)       | NO   | PRI | NULL    |       |
+| birth_date | date          | YES  |     | NULL    |       |
+| first_name | varchar(14)   | YES  |     | NULL    |       |
+| last_name  | varchar(16)   | YES  |     | NULL    |       |
+| gender     | enum('m','f') | YES  |     | NULL    |       |
+| hire_date  | date          | YES  |     | NULL    |       |
++------------+---------------+------+-----+---------+-------+
+6 rows in set (0.018 sec)
+
+MariaDB [assignment]> describe department;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| dept_no   | char(4)     | NO   | PRI | NULL    |       |
+| dept_name | varchar(40) | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+2 rows in set (0.015 sec)
+
+MariaDB [assignment]> create table salaries(
+    -> salary int(11),
+    -> from_date date,
+    -> to_date date,
+    -> emp_no int,
+    -> constraint fk_emp FOREIGN KEY (emp_no)
+    -> references employee(emp_no));
+Query OK, 0 rows affected (0.027 sec)
+
+MariaDB [assignment]> create table titles(
+    -> from_date date,
+    -> to_date date,
+    -> emp_no int,
+    -> title varchar(50),
+    -> constraint fk_emp_no FOREIGN KEY (emp_no)
+    -> references employee(emp_no));
+Query OK, 0 rows affected (0.021 sec)
+
+MariaDB [assignment]> create table dept_manager(
+    -> from_date date,
+    -> to_date date,
+    -> emp_no int,
+    -> dept_no char(4),
+    -> index (emp_no),
+    -> index (dept_no),
+    -> CONSTRAINT FK_EMP_DEPT FOREIGN KEY(EMP_NO) REFERENCES
+    -> EMPLOYEE(EMP_NO),
+    -> CONSTRAINT FK_DEPT FOREIGN KEY(DEPT_NO) REFERENCES
+    -> DEPARTMENT(DEPT_NO));
+Query OK, 0 rows affected (0.028 sec)
+
+MariaDB [assignment]> create table dept_emp(
+    -> from_date date,
+    -> to_date date,
+    -> emp_no int,
+    -> dept_no char(4),
+    -> index (emp_no),
+    -> index (dept_no),
+    -> CONSTRAINT FK_EMP_D FOREIGN KEY(EMP_NO) REFERENCES
+    -> EMPLOYEE(EMP_NO),
+    -> CONSTRAINT FK_D FOREIGN KEY(DEPT_NO) REFERENCES
+    -> DEPARTMENT(DEPT_NO));
+Query OK, 0 rows affected (0.027 sec)
+
+MariaDB [assignment]> insert into employee values('1','2003-08-21','ali','malik','m','2022-01-01');
+Query OK, 1 row affected (0.058 sec)
+
+MariaDB [assignment]> insert into employee values('2','2003-08-22','hamza','khan','m','2022-01-01');
+Query OK, 1 row affected (0.004 sec)
+
+MariaDB [assignment]> insert into employee values('3','2003-09-22','nomi','khatak','m','2022-01-01');
+Query OK, 1 row affected (0.004 sec)
+
+MariaDB [assignment]> insert into employee values('4','2003-09-10','mojo','khatak','m','2022-01-12');
+Query OK, 1 row affected (0.003 sec)
+
+MariaDB [assignment]> select * from employee;
++--------+------------+------------+-----------+--------+------------+
+| emp_no | birth_date | first_name | last_name | gender | hire_date  |
++--------+------------+------------+-----------+--------+------------+
+|      1 | 2003-08-21 | ali        | malik     | m      | 2022-01-01 |
+|      2 | 2003-08-22 | hamza      | khan      | m      | 2022-01-01 |
+|      3 | 2003-09-22 | nomi       | khatak    | m      | 2022-01-01 |
+|      4 | 2003-09-10 | mojo       | khatak    | m      | 2022-01-12 |
++--------+------------+------------+-----------+--------+------------+
+4 rows in set (0.000 sec)
+
+MariaDB [assignment]> insert into department values('001','management');
+Query OK, 1 row affected (0.005 sec)
+
+MariaDB [assignment]> insert into department values('002','accounts');
+Query OK, 1 row affected (0.002 sec)
+
+MariaDB [assignment]> insert into department values('003','admin');
+Query OK, 1 row affected (0.003 sec)
+
+MariaDB [assignment]> insert into department values('003','facult');
+ERROR 1062 (23000): Duplicate entry '003' for key 'PRIMARY'
+MariaDB [assignment]> insert into department values('004','facult');
+Query OK, 1 row affected (0.003 sec)
+
+MariaDB [assignment]> select * from departments;
+ERROR 1146 (42S02): Table 'assignment.departments' doesn't exist
+MariaDB [assignment]> select * from department;
++---------+------------+
+| dept_no | dept_name  |
++---------+------------+
+| 001     | management |
+| 002     | accounts   |
+| 003     | admin      |
+| 004     | facult     |
++---------+------------+
+4 rows in set (0.001 sec)
+
+MariaDB [assignment]> insert into salaries values('10000','2022-01-01','2022-02-01','1');
+Query OK, 1 row affected (0.004 sec)
+
+MariaDB [assignment]> insert into salaries values('20000','2022-01-01','2022-02-01','2');
+Query OK, 1 row affected (0.002 sec)
+
+MariaDB [assignment]> insert into salaries values('15000','2022-01-01','2022-02-01','3');
+Query OK, 1 row affected (0.003 sec)
+
+MariaDB [assignment]> insert into salaries values('18000','2022-01-01','2022-02-01','4');
+Query OK, 1 row affected (0.003 sec)
+
+MariaDB [assignment]> select * from salaries;
++--------+------------+------------+--------+
+| salary | from_date  | to_date    | emp_no |
++--------+------------+------------+--------+
+|  10000 | 2022-01-01 | 2022-02-01 |      1 |
+|  20000 | 2022-01-01 | 2022-02-01 |      2 |
+|  15000 | 2022-01-01 | 2022-02-01 |      3 |
+|  18000 | 2022-01-01 | 2022-02-01 |      4 |
++--------+------------+------------+--------+
+
+MariaDB [assignment]> insert into titles values('2022-01-01','2023-01-01','1','employee');
+Query OK, 1 row affected (0.005 sec)
+
+MariaDB [assignment]> insert into titles values('2022-01-01','2023-01-01','2','employee');
+Query OK, 1 row affected (0.003 sec)
+
+MariaDB [assignment]> insert into titles values('2022-01-01','2023-01-01','3','intern');
+Query OK, 1 row affected (0.002 sec)
+
+MariaDB [assignment]> insert into titles values('2022-01-01','2023-01-01','4','intern');
+Query OK, 1 row affected (0.003 sec)
+
+MariaDB [assignment]> select * from titles;
++------------+------------+--------+----------+
+| from_date  | to_date    | emp_no | title    |
++------------+------------+--------+----------+
+| 2022-01-01 | 2023-01-01 |      1 | employee |
+| 2022-01-01 | 2023-01-01 |      2 | employee |
+| 2022-01-01 | 2023-01-01 |      3 | intern   |
+| 2022-01-01 | 2023-01-01 |      4 | intern   |
++------------+------------+--------+----------+
+
+MariaDB [assignment]> update salaries
+    -> set salary=30000
+    -> where emp_no=1;
+Query OK, 1 row affected (0.009 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [assignment]> select * from salaries;
++--------+------------+------------+--------+
+| salary | from_date  | to_date    | emp_no |
++--------+------------+------------+--------+
+|  30000 | 2022-01-01 | 2022-02-01 |      1 |
+|  20000 | 2022-01-01 | 2022-02-01 |      2 |
+|  15000 | 2022-01-01 | 2022-02-01 |      3 |
+|  18000 | 2022-01-01 | 2022-02-01 |      4 |
++--------+------------+------------+--------+
+4 rows in set (0.001 sec)
+
+MariaDB [assignment]> update titles
+    -> set title='manager'
+    -> where emp_no=1;
+Query OK, 1 row affected (0.005 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [assignment]> select * from titles;
++------------+------------+--------+----------+
+| from_date  | to_date    | emp_no | title    |
++------------+------------+--------+----------+
+| 2022-01-01 | 2023-01-01 |      1 | manager  |
+| 2022-01-01 | 2023-01-01 |      2 | employee |
+| 2022-01-01 | 2023-01-01 |      3 | intern   |
+| 2022-01-01 | 2023-01-01 |      4 | intern   |
++------------+------------+--------+----------+
+4 rows in set (0.001 sec)
+
+MariaDB [assignment]> update employee
+    -> set hire_date='2022-03-12'
+    -> where emp_no='2';
+Query OK, 1 row affected (0.003 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [assignment]> select * from employee;
++--------+------------+------------+-----------+--------+------------+
+| emp_no | birth_date | first_name | last_name | gender | hire_date  |
++--------+------------+------------+-----------+--------+------------+
+|      1 | 2003-08-21 | ali        | malik     | m      | 2022-01-01 |
+|      2 | 2003-08-22 | hamza      | khan      | m      | 2022-03-12 |
+|      3 | 2003-09-22 | nomi       | khatak    | m      | 2022-01-01 |
+|      4 | 2003-09-10 | mojo       | khatak    | m      | 2022-01-12 |
++--------+------------+------------+-----------+--------+------------+
+4 rows in set (0.001 sec)
+
+SIR THE DELETION CODES WHERE CONFUSING AS WE HAVE NOT LEARNED HOW TO DELETE A TABLE FROM WHICH
+A KEY IN BEING REFERENCED
+
+
+
+
+
+
+
+
+
+
+
+

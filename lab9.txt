@@ -1,0 +1,174 @@
+
+question 1
+
+MariaDB [person]> delimiter $$
+MariaDB [person]> create procedure proc1(IN var1 int,var2 int,var3 int,var4 int,var5 int)
+    -> begin
+    -> insert into summary values(var1,var2,var3,var4,var5);
+    -> end $$
+Query OK, 0 rows affected (0.006 sec)
+
+MariaDB [person]> delimiter ;
+MariaDB [person]> call proc1(1,2,1,0,1);
+Query OK, 1 row affected (0.004 sec)
+
+MariaDB [person]> select*from summary;
++----+-------------+-------+---------+-------+
+| id | total_users | yahoo | hotmail | gmail |
++----+-------------+-------+---------+-------+
+| 1  | 2           | 1     | 0       | 1     |
++----+-------------+-------+---------+-------+
+1 row in set (0.001 sec)
+
+question 2
+
+MariaDB [person]> CREATE TABLE Users (
+    ->     user_id INT NOT NULL,
+    ->     username VARCHAR(255) NOT NULL,
+    ->     password VARCHAR(255) NOT NULL,
+    ->     email VARCHAR(255) NOT NULL,
+    ->     salary INT,
+    ->     PRIMARY KEY (user_id)
+    -> );
+Query OK, 0 rows affected (0.012 sec)
+
+MariaDB [person]> DELIMITER //
+MariaDB [person]>
+MariaDB [person]> CREATE PROCEDURE InsertUser(IN in_user_id INT, IN in_username VARCHAR(255), IN in_password VARCHAR(255), IN in_email VARCHAR(255))
+    -> BEGIN
+    ->     INSERT INTO Users (user_id, username, password, email)
+    ->     VALUES (in_user_id, in_username, in_password, in_email);
+    -> END //
+Query OK, 0 rows affected (0.007 sec)
+
+MariaDB [person]>
+MariaDB [person]> DELIMITER ;
+MariaDB [person]> CALL InsertUser(1, 'abc123', 'def321', 'abc123@yahoo.com');
+Query OK, 1 row affected (0.005 sec)
+
+MariaDB [person]> select * from Users;
++---------+----------+----------+------------------+--------+
+| user_id | username | password | email            | salary |
++---------+----------+----------+------------------+--------+
+|       1 | abc123   | def321   | abc123@yahoo.com |   NULL |
++---------+----------+----------+------------------+--------+
+1 row in set (0.001 sec)
+
+MariaDB [person]> update Users
+    -> set salary = '20000' where user_id=1;
+Query OK, 1 row affected (0.006 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [person]> select * from Users;
++---------+----------+----------+------------------+--------+
+| user_id | username | password | email            | salary |
++---------+----------+----------+------------------+--------+
+|       1 | abc123   | def321   | abc123@yahoo.com |  20000 |
++---------+----------+----------+------------------+--------+
+
+question 3
+
+MariaDB [person]> delimiter $$
+MariaDB [person]> create procedure out1(out count1 int)
+    -> begin
+    -> select count(*) into count1 from Users;
+    -> end$$
+Query OK, 0 rows affected (0.005 sec)
+
+MariaDB [person]> call out1(@out)$$
+Query OK, 1 row affected (0.001 sec)
+
+MariaDB [person]> select @out$$
++------+
+| @out |
++------+
+|    2 |
++------+
+1 row in set (0.002 sec)
+
+question 4
+
+MariaDB [person]> create procedure out2(out count1 int)
+    -> select avg(salary) into count1 from Users;
+    -> end$$
+Query OK, 0 rows affected (0.006 sec)
+
+MariaDB [person]> call out2(@out2)$$
+
+Query OK, 1 row affected (0.003 sec)
+
+MariaDB [person]> select @out2$$
++-------+
+| @out2 |
++-------+
+| 27500 |
++-------+
+1 row in set (0.000 sec)
+
+question 5
+
+
+MariaDB [person]> create procedure out4()
+    -> begin
+    -> declare a,b INT;
+    -> select min(salary) into a from Users;
+    -> select max(salary) into b from Users;
+    -> select a,b;
+    -> end$$
+Query OK, 0 rows affected (0.004 sec)
+
+MariaDB [person]> delimiter ;
+
+MariaDB [person]> call out4();
++-------+-------+
+| a     | b     |
++-------+-------+
+| 20000 | 35000 |
++-------+-------+
+1 row in set (0.001 sec)
+
+Query OK, 2 rows affected (0.003 sec)
+
+
+question 6
+
+CREATE OR REPLACE TRIGGER insert_user_trigger
+AFTER INSERT ON users
+FOR EACH ROW
+BEGIN
+    UPDATE summary SET total_users = total_users + 1;
+END$$
+
+CREATE OR REPLACE TRIGGER delete_user_trigger
+AFTER DELETE ON users
+FOR EACH ROW
+BEGIN
+    UPDATE summary SET total_users = total_users - 1;
+END$$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
